@@ -1,0 +1,37 @@
+-- Tabla principal: hu_cat_moneda
+CREATE TABLE hu_cat_moneda (
+    num_cia INTEGER PRIMARY KEY, 
+    clave_moneda VARCHAR(10),
+    descripcion VARCHAR(100),
+    simbolo VARCHAR(10),
+    estatus VARCHAR(10)
+);
+
+-- Índice adicional por clave_moneda (opcional si se consulta frecuentemente)
+CREATE INDEX idx_moneda_clave ON hu_cat_moneda(clave_moneda);
+
+-- Tabla dependiente: hu_empls
+CREATE TABLE hu_empls (
+    num_emp INTEGER PRIMARY KEY, 
+    num_cia INTEGER,             
+    clave_moneda VARCHAR(10),
+    nombre VARCHAR(50),
+    apellido_paterno VARCHAR(50),
+    apellido_materno VARCHAR(50),
+    puesto VARCHAR(50),
+    CONSTRAINT fk_empls_moneda FOREIGN KEY (num_cia) REFERENCES hu_cat_moneda(num_cia)
+);
+
+-- Índices adicionales para búsquedas frecuentes
+CREATE INDEX idx_empls_num_cia ON hu_empls(num_cia);
+CREATE INDEX idx_empls_clave_moneda ON hu_empls(clave_moneda);
+
+-- Insertar monedas
+INSERT INTO hu_cat_moneda (num_cia, clave_moneda, descripcion, simbolo, estatus) VALUES
+(1, 'MXN', 'Peso Mexicano', '$', 'A'),
+(2, 'USD', 'Dólar Estadounidense', '$', 'A');
+
+-- Insertar empleados
+INSERT INTO hu_empls (num_emp, num_cia, clave_moneda, nombre, apellido_paterno, apellido_materno, puesto) VALUES
+(1001, 1, 'MXN', 'Juan', 'Pérez', 'Gómez', 'Analista'),
+(1002, 2, 'USD', 'Ana', 'López', 'Martínez', 'Desarrolladora');
