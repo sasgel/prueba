@@ -1,10 +1,11 @@
 -- Tabla principal: hu_cat_moneda
 CREATE TABLE hu_cat_moneda (
-    num_cia INTEGER PRIMARY KEY, 
+    num_cia INTEGER , 
     clave_moneda VARCHAR(10),
     descripcion VARCHAR(100),
     simbolo VARCHAR(10),
-    estatus VARCHAR(10)
+    estatus VARCHAR(10),
+    CONSTRAINT pk_moneda PRIMARY KEY (num_cia, clave_moneda)
 );
 
 -- Índice adicional por clave_moneda (opcional si se consulta frecuentemente)
@@ -12,14 +13,16 @@ CREATE INDEX idx_moneda_clave ON hu_cat_moneda(clave_moneda);
 
 -- Tabla dependiente: hu_empls
 CREATE TABLE hu_empls (
-    num_emp INTEGER PRIMARY KEY, 
-    num_cia INTEGER,             
-    clave_moneda VARCHAR(10),
+    num_emp INTEGER NOT NULL, 
+    num_cia INTEGER NOT NULL,             
+    clave_moneda VARCHAR(10) NOT NULL,
     nombre VARCHAR(50),
     apellido_paterno VARCHAR(50),
     apellido_materno VARCHAR(50),
     puesto VARCHAR(50),
-    CONSTRAINT fk_empls_moneda FOREIGN KEY (num_cia) REFERENCES hu_cat_moneda(num_cia)
+    CONSTRAINT pk_empls PRIMARY KEY (num_cia, num_emp),
+    CONSTRAINT fk_empls_moneda FOREIGN KEY (num_cia, clave_moneda)
+    REFERENCES hu_cat_moneda(num_cia, clave_moneda)
 );
 
 -- Índices adicionales para búsquedas frecuentes
