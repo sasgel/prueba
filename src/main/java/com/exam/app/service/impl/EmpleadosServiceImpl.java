@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.exam.app.entity.HuCatMonedaEntity;
+import com.exam.app.entity.HuCatMonedaId;
 import com.exam.app.entity.HuEmplsEntity;
 import com.exam.app.repository.CatMonedaRepository;
 import com.exam.app.repository.EmplsRepository;
@@ -34,7 +35,11 @@ public class EmpleadosServiceImpl implements EmpleadosService {
     }
 
     public HuEmplsEntity crear(HuEmplsEntity empleado) {
-        validarMoneda(empleado.getNumCia().getNumCia());
+        Integer numCia = empleado.getMoneda().getId().getNumCia();
+        String claveMoneda = empleado.getMoneda().getId().getClaveMoneda();
+
+        validarMoneda(numCia, claveMoneda);
+
         return empRepo.save(empleado);
     }
 
@@ -42,14 +47,20 @@ public class EmpleadosServiceImpl implements EmpleadosService {
         HuEmplsEntity existente = empRepo.findById(numEmp)
             .orElseThrow(() -> new EntityNotFoundException("Empleado no encontrado"));
 
-        validarMoneda(empleadoActualizado.getNumCia().getNumCia());
+        HuCatMonedaId monedaId = empleadoActualizado.getMoneda().getId();
+        Integer numCia = monedaId.getNumCia();
+        String claveMoneda = monedaId.getClaveMoneda();
+
+        validarMoneda(numCia, claveMoneda);
+
+        HuCatMonedaEntity moneda = catRepo.findById(monedaId)
+            .orElseThrow(() -> new EntityNotFoundException("Moneda no encontrada"));
 
         existente.setNombre(empleadoActualizado.getNombre());
         existente.setApellidoPaterno(empleadoActualizado.getApellidoPaterno());
         existente.setApellidoMaterno(empleadoActualizado.getApellidoMaterno());
         existente.setPuesto(empleadoActualizado.getPuesto());
-        existente.setClaveMoneda(empleadoActualizado.getClaveMoneda());
-        existente.setNumCia(empleadoActualizado.getNumCia());
+        existente.setMoneda(moneda); 
 
         return empRepo.save(existente);
     }
@@ -62,12 +73,14 @@ public class EmpleadosServiceImpl implements EmpleadosService {
     }
     
     public List<HuEmplsEntity> buscarPorNumCia(Integer numCia) {
-        return empRepo.findByNumCia_NumCia(numCia);
+        return empRepo.findByMoneda_Id_NumCia(numCia);
     }
 
-    private void validarMoneda(Integer numCia) {
-        if (!catRepo.existsById(numCia)) {
-            throw new IllegalArgumentException("La moneda con numCia " + numCia + " no existe");
+    private void validarMoneda(Integer numCia, String claveMoneda) {
+        HuCatMonedaId monedaId = new HuCatMonedaId(numCia, claveMoneda);
+
+        if (!catRepo.existsById(monedaId)) {
+            throw new IllegalArgumentException("La moneda con numCia " + numCia + " y claveMoneda " + claveMoneda + " no existe");
         }
     }
 
@@ -75,12 +88,16 @@ public class EmpleadosServiceImpl implements EmpleadosService {
     public Optional<Map<String, Object>> obtenerDetalleEmpleado(Integer numCia, Integer numEmp) {
         Optional<HuEmplsEntity> empleadoOpt = empRepo.findById(numEmp);
 
-        if (empleadoOpt.isEmpty() || !empleadoOpt.get().getNumCia().getNumCia().equals(numCia)) {
+        if (empleadoOpt.isEmpty() || !empleadoOpt.get().getMoneda().getId().getNumCia().equals(numCia)) {
             return Optional.empty();
         }
 
         HuEmplsEntity empleado = empleadoOpt.get();
-        Optional<HuCatMonedaEntity> monedaOpt = catRepo.findById(numCia);
+
+        String claveMoneda = empleado.getMoneda().getId().getClaveMoneda();
+
+        HuCatMonedaId monedaId = new HuCatMonedaId(numCia, claveMoneda);
+        Optional<HuCatMonedaEntity> monedaOpt = catRepo.findById(monedaId);
 
         Map<String, Object> resultado = new HashMap<>();
         resultado.put("empleado", empleado);
@@ -91,8 +108,10 @@ public class EmpleadosServiceImpl implements EmpleadosService {
     
     @Override
     public Map<String, Object> obtenerEmpleadosPorMoneda(Integer numCia, String claveMoneda) {
-        List<HuEmplsEntity> empleados = empRepo.findByNumCia_NumCiaAndClaveMoneda(numCia, claveMoneda);
-        Optional<HuCatMonedaEntity> monedaOpt = catRepo.findById(numCia);
+        List<HuEmplsEntity> empleados = empRepo.findByMoneda_Id_NumCiaAndMoneda_Id_ClaveMoneda(numCia, claveMoneda);
+
+        HuCatMonedaId monedaId = new HuCatMonedaId(numCia, claveMoneda);
+        Optional<HuCatMonedaEntity> monedaOpt = catRepo.findById(monedaId);
 
         Map<String, Object> resultado = new HashMap<>();
         resultado.put("moneda", monedaOpt.orElse(null));
