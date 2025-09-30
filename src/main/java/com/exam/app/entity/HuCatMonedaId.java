@@ -3,7 +3,7 @@ package com.exam.app.entity;
 import java.io.Serializable;
 
 import jakarta.persistence.Embeddable;
-import lombok.AllArgsConstructor;
+
 import lombok.Data;
 
 @Embeddable

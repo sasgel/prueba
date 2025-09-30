@@ -15,7 +15,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.exam.app.entity.HuCatMonedaEntity;
 import com.exam.app.entity.HuEmplsEntity;
+import com.exam.app.repository.CatMonedaRepository;
 import com.exam.app.service.EmpleadosService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -36,6 +38,15 @@ public class HuApi {
 	public ResponseEntity<List<HuEmplsEntity>> obtenerTodos() {
 		return ResponseEntity.ok(emplService.obtenerTodos());
 	}
+	
+	
+	@Operation(summary = "Obtener por Clave Monedas", description = "Devuelve una lista de todas las monedas registradas.")
+	@ApiResponse(responseCode = "200", description = "Lista completa de monedas obtenida exitosamente")
+	 @GetMapping("/clave/{claveMoneda}")
+    public ResponseEntity<List<HuCatMonedaEntity>> buscarPorClave(@PathVariable String claveMoneda) {
+        return ResponseEntity.ok(emplService.buscarPorClave(claveMoneda));
+    }
+	
 
 	@Operation(summary = "Obtener empleado por ID", description = "Devuelve los datos de un empleado específico según su ID.")
 	@ApiResponses({ @ApiResponse(responseCode = "200", description = "Empleado encontrado"),

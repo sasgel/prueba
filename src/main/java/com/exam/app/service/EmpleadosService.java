@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import com.exam.app.entity.HuCatMonedaEntity;
 import com.exam.app.entity.HuEmplsEntity;
 
 public interface EmpleadosService {
@@ -15,4 +16,5 @@ public interface EmpleadosService {
 	void eliminar(Integer numEmp);
 	public Optional<Map<String, Object>> obtenerDetalleEmpleado(Integer numCia, Integer numEmp);
 	public Map<String, Object> obtenerEmpleadosPorMoneda(Integer numCia, String claveMoneda);
+	List<HuCatMonedaEntity> buscarPorClave(String claveMoneda);
 }

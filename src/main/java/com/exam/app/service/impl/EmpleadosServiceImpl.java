@@ -119,4 +119,10 @@ public class EmpleadosServiceImpl implements EmpleadosService {
 
         return resultado;
     }
+
+	@Override
+	public List<HuCatMonedaEntity> buscarPorClave(String claveMoneda) {
+		
+		return catRepo.findById_ClaveMonedaContainingIgnoreCase(claveMoneda);
+	}
 }
