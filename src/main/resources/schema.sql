@@ -32,7 +32,9 @@ CREATE INDEX idx_empls_clave_moneda ON hu_empls(clave_moneda);
 -- Insertar monedas
 INSERT INTO hu_cat_moneda (num_cia, clave_moneda, descripcion, simbolo, estatus) VALUES
 (1, 'MXN', 'Peso Mexicano', '$', 'A'),
-(2, 'USD', 'Dólar Estadounidense', '$', 'A');
+
+(2, 'USD', 'Dólar Estadounidense', '$', 'A'),
+(3, 'COL','Peso Colombiano', '$','A');
 
 -- Insertar empleados
 INSERT INTO hu_empls (num_emp, num_cia, clave_moneda, nombre, apellido_paterno, apellido_materno, puesto) VALUES
